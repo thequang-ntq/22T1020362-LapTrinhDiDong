@@ -1,3 +1,5 @@
 1) Cài Postman
 2) Sử dụng Postman cho 1 số API trên Web mẫu
 3) Tạo Web API (Không bắt buộc)
+4) Tìm hiểu JSON
+5) Tìm hiểu JWT biết được ai đang gọi API

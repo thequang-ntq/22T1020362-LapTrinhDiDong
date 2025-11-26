@@ -1,0 +1,65 @@
+*** 	Flutter - API với HTTP & DIO 	  ***
+I) Truyền thống: HTTP & Client
+- Monotholic: Với mỗi nền tảng phải lập trình lại, rất khó mở rộng, phát triển.	
+- Hiện nay: Sử dụng Microservices.
++ Xây dựng trục Web API liên lạc trực tiếp với Client.
+
+			HTTP (port 80,445)	__________
+Smartphone (FLutter)	=======================	|	 |
+						|	 |
+PC (C#)			=======================	| WebAPI | ================ Server
+						|	 |
+SW (Java)		=======================	|________|
+...		 
++ CD/CI liên tục tích hợp và phát triển, không bị gián đoạn phần m
+
+	TCP/IP
+PC =============== Server ========== DB
+	HTTP
+
+
+					Request (get, post...), định dạng JSON, đối tượng Dart -> JSON
+SM (Smartphone, dùng Dart, Flutter) <======================================================================> WA (WebApi, dùng Backend)
+					Response, định dạng JSON, JSON -> đối tượng Dart
+
+* Sử dụng FakeStore API
+https://fakestoreapi.com/docs#tag/Products
+* pub.dev:
+https://pub.dev/
+Thư viện dio:
+https://pub.dev/packages/dio
+xem platform có cái hệ điều hành mong muốn không?
+Copy, dán trong pubspec.yaml / dưới phần dependencies, cùng hàng cupertino_icons.
+
+1) Phương án lập trình truyền thống: 
+- Có 10 câu lệnh, chạy tuần tự từ 1 đến 10.
+- Giả sử tại câu lệnh 5, tốn rất nhiều thời gian, ứng dụng sẽ bị đơ.
+- Đợi khi nào xong mới chạy tiếp được.
+- Gọi là lập trình đồng bộ.
+
+2) Phương án nay:
+- Có 10 câu lệnh, chạy tuần tự từ 1 đến 10.
+- Giả sử tại câu lệnh 5, tốn rất nhiều thời gian.
+- Câu lệnh 5 có chương trình phục vụ riêng (async), còn các câu lệnh còn lại phục vụ như bình thường.
+- Phục vụ thường chạy song song phục vụ riêng (async - await).
+- Số lượng phục vụ riêng có hạn (Threads - Multithread - Lập trình đa luồng, bất đồng bộ).
+- Gọi là đa luồng - lập trình bất đồng bộ.
+- Câu lệnh 5 có thời gian hết hạn (timeout), nếu vượt quá timeout thì hủy câu lệnh 5 để giải phóng tài nguyên, dùng cho các câu lệnh tiếp theo nếu có.
+
+II) Hiểu HTTP và package http
+
+
+III) Nên dùng Dio trong dự án thực tế vì sao
+1) Thư viện đơn giản hóa và có nhiều tính năng hơn http
+2) dio: ^5.9.0
+
+IV) Biết cách gọi API GET/POST/PUT/DELETE bằng Dio
+1) Biết await, add "async" modifier khi gọi request api.
+
+V) Biết xử lý lỗi, timeout, logging
+
+VI) Biết parse JSON --> Model và hiển thị lên UI
+
+* BTVN: 
+1) Làm rating, giao diện myItem.
+2) Tìm hiểu kỹ thuật JWT để tuần sau làm Post, Put, Delete
