@@ -1,0 +1,914 @@
+file api.dart:
+import 'package:api_example/model/product.dart';
+import 'package:dio/dio.dart';
+
+class API {
+  Future<List<Product>> getAllProduct() async {
+    var dio = Dio();
+    var url = "https://fakestoreapi.com/products";
+    var response = await dio.request(url); // Mặc định là get
+    List<Product> ls = [];
+    //Thành công -> 200, thất bại -> khác
+    if(response.statusCode == 200) {
+      //Lấy dữ liệu - dạng JSON
+      List data = response.data;
+      ls = data.map(
+        //tương tự (json) { return Product.formJson(json) }
+        (json) => Product.fromJson(json)
+      ).toList();
+    }
+    else {
+      String error = response.statusMessage ?? "lỗi gì đó";
+      print("Lỗi: " + error);
+    }
+    return ls;
+  }
+}
+
+//Biến toàn cục
+var testAPI = API();
+product.dart:
+import 'package:api_example/model/rating.dart';
+
+class Product {
+  int id;
+  String title;
+  dynamic price; //dynamic: kiểu dữ liệu đa dạng, tùy thích
+  String description;
+  String category;
+  String image;
+  //Bài tập: Khai báo rating
+  Rating rating;
+  
+  Product({
+    required this.id,
+    required this.title,
+    required this.price,
+    required this.description,
+    required this.category,
+    required this.image, //nếu không có required thì không bắt buộc, nhưng phải gán dữ liệu
+    required this.rating,
+  });
+
+  //Từ JSON sang class object, bên key là String, bên value chưa biết nên dynamic
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: json['id'] ?? 0, // Nếu json['id'] null thì lấy 0, còn khác null thì lấy nó
+      title: json['title'] ?? '', 
+      price: json['price'] ?? 0, 
+      description: json['description'] ?? '', 
+      category: json['category'] ?? '',
+      image: json['image'] ?? '', 
+      rating: Rating.fromJson(json['rating'] ?? {}),
+    );
+  }
+
+  // Method để convert sang JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'price': price,
+      'description': description,
+      'category': category,
+      'image': image,
+      'rating': rating.toJson(),
+    };
+  }
+}
+rating.dart:
+class Rating {
+  double rate;
+  int count;
+
+  Rating({
+    required this.rate, 
+    required this.count
+  });
+
+  // Factory constructor để parse từ JSON
+  factory Rating.fromJson(Map<String, dynamic> json) {
+    return Rating(
+      rate: json['rate'] ?? 0,
+      count: json['count'] ?? 0,
+    );
+  }
+
+  // Method để convert sang JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'rate': rate,
+      'count': count,
+    };
+  }
+}
+MyProduct.dart:
+import 'package:api_example/api/api.dart';
+import 'package:api_example/model/product.dart';
+import 'package:flutter/material.dart';
+
+class MyProduct extends StatefulWidget {
+  const MyProduct({super.key});
+
+  @override
+  State<MyProduct> createState() => _MyProductState();
+}
+
+class _MyProductState extends State<MyProduct> {
+  @override
+  void initState() {
+    super.initState();
+    testAPI.getAllProduct();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double w = MediaQuery.of(context).size.width;
+    return Scaffold(
+      backgroundColor: Color(0xFFF5F5F5),
+      appBar: _buildAppBar(w),
+      body: Column(
+        children: [
+          _buildSearchBar(w),
+          Expanded(
+            child: FutureBuilder(
+              future: testAPI.getAllProduct(),
+              builder: (context, snap) {
+                if (snap.connectionState == ConnectionState.done) {
+                  if (snap.hasError) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.error_outline, size: 64, color: Colors.grey),
+                          SizedBox(height: 16),
+                          Text('Lỗi: ${snap.error}'),
+                        ],
+                      ),
+                    );
+                  }
+                  if (snap.data == null || snap.data!.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.shopping_bag_outlined, size: 64, color: Colors.grey),
+                          SizedBox(height: 16),
+                          Text('Không có sản phẩm'),
+                        ],
+                      ),
+                    );
+                  }
+                  return myGridView(snap.data!);
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF6600)),
+                    ),
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: _buildBottomNav(),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(double w) {
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Colors.white,
+      toolbarHeight: 70,
+      title: Row(
+        children: [
+          // Logo FakeLazada
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFFF6600), Color(0xFFFF9933)],
+              ),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              "FakeLazada",
+              style: TextStyle(
+                fontSize: w * 0.05,
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+          Spacer(),
+          // Icons
+          IconButton(
+            icon: Icon(Icons.shopping_cart_outlined, color: Color(0xFFFF6600)),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: Icon(Icons.chat_bubble_outline, color: Color(0xFFFF6600)),
+            onPressed: () {},
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchBar(double w) {
+    return Container(
+      color: Colors.white,
+      padding: EdgeInsets.fromLTRB(12, 0, 12, 12),
+      child: Container(
+        height: 44,
+        decoration: BoxDecoration(
+          color: Color(0xFFF5F5F5),
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: Color(0xFFE0E0E0)),
+        ),
+        child: Row(
+          children: [
+            SizedBox(width: 12),
+            Icon(Icons.search, color: Colors.grey[600], size: 22),
+            SizedBox(width: 8),
+            Expanded(
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Tìm kiếm sản phẩm...',
+                  hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ),
+            Container(
+              height: 44,
+              width: 60,
+              decoration: BoxDecoration(
+                color: Color(0xFFFF6600),
+                borderRadius: BorderRadius.horizontal(right: Radius.circular(4)),
+              ),
+              child: Icon(Icons.camera_alt_outlined, color: Colors.white, size: 20),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget myGridView(List<Product> ls) {
+    return GridView.builder(
+      padding: EdgeInsets.all(8),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.68,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+      ),
+      itemCount: ls.length,
+      itemBuilder: (context, index) {
+        return myItem(ls[index]);
+      },
+    );
+  }
+
+  Widget myItem(Product p) {
+    return GestureDetector(
+      onTap: () {
+        showProductDetail(p);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 4,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image container with badges
+            Stack(
+              children: [
+                Container(
+                  height: 140,
+                  width: double.infinity,
+                  padding: EdgeInsets.all(8),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
+                    child: Image.network(
+                      p.image,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(Icons.broken_image, size: 50, color: Colors.grey);
+                      },
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF6600)),
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                // Discount badge
+                Positioned(
+                  top: 8,
+                  left: 0,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Color(0xFFFF6600),
+                      borderRadius: BorderRadius.horizontal(right: Radius.circular(4)),
+                    ),
+                    child: Text(
+                      '-${(10 + (p.price % 30)).toInt()}%',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                // Free shipping badge
+                if (p.price > 20)
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Color(0xFFFF6600)),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                      child: Text(
+                        'Free Ship',
+                        style: TextStyle(
+                          color: Color(0xFFFF6600),
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+
+            // Product info
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(8, 4, 8, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Title
+                    Text(
+                      p.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        height: 1.3,
+                        color: Colors.black87,
+                      ),
+                    ),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Price
+                        Row(
+                          children: [
+                            Text(
+                              '\$',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFFF6600),
+                              ),
+                            ),
+                            Text(
+                              '${p.price}',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFFF6600),
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        SizedBox(height: 4),
+
+                        // Rating and sold
+                        Row(
+                          children: [
+                            Icon(Icons.star, color: Colors.amber[700], size: 12),
+                            SizedBox(width: 2),
+                            Text(
+                              '${p.rating.rate}',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                            SizedBox(width: 8),
+                            Text(
+                              '${p.rating.count} đã bán',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomNav() {
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildNavItem(Icons.home, 'Trang chủ', true),
+          _buildNavItem(Icons.flash_on, 'Flash Sale', false),
+          _buildNavItem(Icons.category_outlined, 'Danh mục', false),
+          _buildNavItem(Icons.local_offer_outlined, 'Ưu đãi', false),
+          _buildNavItem(Icons.person_outline, 'Tôi', false),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(IconData icon, String label, bool isActive) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          icon,
+          color: isActive ? Color(0xFFFF6600) : Colors.grey[600],
+          size: 24,
+        ),
+        SizedBox(height: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            color: isActive ? Color(0xFFFF6600) : Colors.grey[600],
+            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
+      ],
+    );
+  }
+
+  void showProductDetail(Product p) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.75,
+          minChildSize: 0.5,
+          maxChildSize: 0.95,
+          expand: false,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Drag handle
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 5,
+                        margin: EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                    ),
+
+                    // Image section with gradient overlay
+                    Stack(
+                      children: [
+                        Container(
+                          height: 300,
+                          width: double.infinity,
+                          color: Colors.white,
+                          child: Image.network(
+                            p.image,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        Positioned(
+                          top: 12,
+                          right: 12,
+                          child: Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
+                            child: Icon(Icons.share, size: 20, color: Colors.grey[700]),
+                          ),
+                        ),
+                        Positioned(
+                          top: 12,
+                          left: 12,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFFF6600),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'Flash Sale',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // Product details
+                    Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Price section
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFFFF5F0),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      '\$${p.price}',
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFFFF6600),
+                                      ),
+                                    ),
+                                    SizedBox(width: 12),
+                                    Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Color(0xFFFF6600),
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        '-${(10 + (p.price % 30)).toInt()}%',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 4),
+                                Row(
+                                  children: [
+                                    Text(
+                                      '\$${(p.price * 1.3).toStringAsFixed(2)}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey[600],
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
+                                    ),
+                                    SizedBox(width: 8),
+                                    Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Color(0xFFFF6600)),
+                                        borderRadius: BorderRadius.circular(3),
+                                      ),
+                                      child: Text(
+                                        'Free Ship',
+                                        style: TextStyle(
+                                          color: Color(0xFFFF6600),
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(height: 16),
+
+                          // Title
+                          Text(
+                            p.title,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              height: 1.4,
+                            ),
+                          ),
+
+                          SizedBox(height: 12),
+
+                          // Rating section
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFF5F5F5),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Row(
+                                  children: List.generate(5, (index) {
+                                    return Icon(
+                                      index < p.rating.rate.floor()
+                                          ? Icons.star
+                                          : (index < p.rating.rate
+                                              ? Icons.star_half
+                                              : Icons.star_border),
+                                      color: Colors.amber[700],
+                                      size: 18,
+                                    );
+                                  }),
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  '${p.rating.rate}/5',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                SizedBox(width: 16),
+                                Text(
+                                  '${p.rating.count} đánh giá',
+                                  style: TextStyle(
+                                    color: Colors.grey[700],
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                Spacer(),
+                                Text(
+                                  '${p.rating.count * 3} đã bán',
+                                  style: TextStyle(
+                                    color: Colors.grey[700],
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(height: 16),
+
+                          // Category
+                          Row(
+                            children: [
+                              Text(
+                                'Danh mục: ',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[700],
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFE8F5E9),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  p.category.toUpperCase(),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF4CAF50),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(height: 20),
+
+                          Divider(thickness: 1),
+
+                          SizedBox(height: 12),
+
+                          // Description
+                          Text(
+                            'Chi tiết sản phẩm',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            p.description,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[800],
+                              height: 1.6,
+                            ),
+                          ),
+
+                          SizedBox(height: 24),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+main.dart:
+import 'package:flutter/material.dart';
+import 'package:api_example/screens/my_product.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: MyProduct(),
+    );
+  }
+}
+pubspec.yaml:
+name: api_example
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+  dio: ^5.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^5.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  # assets:
+  #   - images/a_dot_burr.jpeg
+  #   - images/a_dot_ham.jpeg
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/to/resolution-aware-images
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/to/asset-from-package
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/to/font-from-package
+Yêu cầu:
+- Trong appbar, khi bấm vào nút shopping_cart và nút chat_buble ở dưới, thì sẽ hiện snackbar: "Đã bấm vào nút mua hàng" / "Đã bấm vào nút trò chuyện (chat)".
+- Trong thanh tìm kiếm (Searchbar), khi nhập dữ liệu và nhấn enter thì sẽ lọc lại các sản phẩm trong danh sách mà title, price, description, category, rate và count (Trong Rating) của sản phẩm đó có chứa ký tự dữ liệu trong thanh tìm kiếm, nếu ký tự dữ liệu thanh tìm kiếm rỗng thì hiện tất cả.
+- Trong modal chi tiết sản phẩm, thêm nút "Thêm vào giỏ hàng" ở dưới cùng modal và sau đó khi bấm vào nút sẽ hiện snackbar "Đã thêm vào giỏ hàng".
+Ghi chú:
+- Giao diện đẹp, responsive, áp dụng bootstrap, giống giao diện lazada.
+- Chỉnh lại các kích cỡ ưu tiên theo w (MediaQuery.of(context).size.width) và h (MediaQuery.of(context).size.height) cho các kích cỡ phù hợp, các kích cỡ khác nếu không phù hợp thì giữ nguyên.
+- snackbar nền đen, chữ trắng, đẹp.
