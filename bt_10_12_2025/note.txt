@@ -1,0 +1,556 @@
+- main.dart:
+import 'package:flutter/material.dart';
+import 'package:api_login_form/screens/api_login_form.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: ApiLoginForm(),
+    );
+  }
+}
+- api.dart:
+import 'package:api_login_form/model/news.dart';
+import 'package:dio/dio.dart';
+
+class API {
+  String accessToken = "";
+  final String baseUrl = "https://newsapi.org/v2";
+
+  Future<List<News>> getUser() async {
+    var dio = Dio();
+    var getUrl = "https://dummyjson.com/auth/me";
+
+    try {
+      var response = await dio.request(getUrl);
+      
+      if (response.statusCode == 200) {
+        List data = response.data['articles'];
+        ls = data.map((json) => News.fromJson(json)).toList();
+      } else {
+        String error = response.statusMessage ?? "Lỗi không xác định";
+        print("Lỗi: $error");
+      }
+    } catch (e) {
+      print("Lỗi kết nối: $e");
+    }
+    
+    return ls;
+  }
+}
+
+var testAPI = API();
+- news.dart:
+class News {
+  final String title;
+  final String description;
+  final String url;
+  final String urlToImage;
+  final String publishedAt;
+  final String author;
+  final String content;
+  final Source source;
+
+  News({
+    required this.title,
+    required this.description,
+    required this.url,
+    required this.urlToImage,
+    required this.publishedAt,
+    required this.author,
+    required this.content,
+    required this.source,
+  });
+
+  factory News.fromJson(Map<String, dynamic> json) {
+    return News(
+      title: json['title'] ?? 'No Title',
+      description: json['description'] ?? 'No Description',
+      url: json['url'] ?? '',
+      urlToImage: json['urlToImage'] ?? '../../assets/images/placeholder.jpg',
+      publishedAt: json['publishedAt'] ?? '',
+      author: json['author'] ?? 'Unknown',
+      content: json['content'] ?? 'No Content',
+      source: Source.fromJson(json['source'] ?? {}),
+    );
+  }
+}
+
+class Source {
+  final String id;
+  final String name;
+
+  Source({
+    required this.id,
+    required this.name,
+  });
+
+  factory Source.fromJson(Map<String, dynamic> json) {
+    return Source(
+      id: json['id'] ?? '',
+      name: json['name'] ?? 'Unknown Source',
+    );
+  }
+}
+- api_login_form.dart:
+import 'package:flutter/material.dart';
+
+class ApiLoginForm extends StatefulWidget {
+  const ApiLoginForm({super.key});
+
+  @override
+  State<ApiLoginForm> createState() => _ApiLoginFormState();
+}
+
+class _ApiLoginFormState extends State<ApiLoginForm> {
+
+  bool _obscurePassword = false; // Biến để điều khiển ẩn/hiện mật khẩu
+  late TextEditingController _passwordController;
+  late TextEditingController _usernameController;
+
+  @override
+  void initState() {
+    super.initState();
+    _usernameController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _usernameController.dispose();
+    _passwordController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    final _formKey = GlobalKey<FormState>();
+
+    double w = MediaQuery.of(context).size.width;
+    double h = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 223, 223, 223),
+      appBar: AppBar(
+        title: 
+          Text(
+            "Form Đăng nhập",
+            style: TextStyle(
+              fontSize: w * 0.05,
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        backgroundColor: const Color.fromARGB(255, 14, 128, 226),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: w * 0.04),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // TextFormField Tên người dùng với nền trắng
+                  TextFormField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.person,
+                        size: w * 0.05,
+                        color: const Color.fromARGB(255, 100, 100, 100),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: "Tên người dùng",
+                      labelStyle: TextStyle(
+                        fontSize: w * 0.042,
+                        color: const Color.fromARGB(255, 100, 100, 100),
+                        fontWeight: FontWeight.w400,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 200, 200, 200),
+                          width: 1,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 200, 200, 200),
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 14, 128, 226),
+                          width: 2,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                          width: 1,
+                        ),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                          width: 2,
+                        ),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: h * 0.02,
+                        horizontal: w * 0.04,
+                      ),
+                    ),
+                    validator: (value) {
+                      if(value == null || value.isEmpty) return "Vui lòng nhập tên người dùng";
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: h * 0.045),
+                  // TextFormField Mật khẩu với nền trắng và nút mắt
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: !_obscurePassword, // Ẩn/hiện mật khẩu
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.lock,
+                        size: w * 0.05,
+                        color: const Color.fromARGB(255, 100, 100, 100),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          size: w * 0.05,
+                          color: const Color.fromARGB(255, 100, 100, 100),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      labelText: "Mật khẩu",
+                      labelStyle: TextStyle(
+                        fontSize: w * 0.042,
+                        color: const Color.fromARGB(255, 100, 100, 100),
+                        fontWeight: FontWeight.w400,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 200, 200, 200),
+                          width: 1,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 200, 200, 200),
+                          width: 1,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Color.fromARGB(255, 14, 128, 226),
+                          width: 2,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                          width: 1,
+                        ),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                          width: 2,
+                        ),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: h * 0.02,
+                        horizontal: w * 0.04,
+                      ),
+                    ),
+                    validator: (value) {
+                      if(value == null || value.isEmpty) return "Vui lòng nhập mật khẩu";
+                      if(value.length < 6) return "Mật khẩu phải có ít nhất 6 ký tự";
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: h * 0.06),
+                  // Nút Đăng nhập
+                  SizedBox(
+                    width: w * 0.5,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(const Color.fromARGB(255, 12, 117, 204)),
+                        shape: WidgetStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                      onPressed: () {
+                        if(_formKey.currentState!.validate()) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "Đăng nhập thành công",
+                                style: TextStyle(
+                                  fontSize: w * 0.045,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ), 
+                            ),
+                          );
+                        }
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: h * 0.012),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.login,
+                              size: w * 0.055,
+                              color: Colors.white,
+                            ),
+                            SizedBox(width: w * 0.025),
+                            Text(
+                              "Đăng nhập",
+                              style: TextStyle(
+                                fontSize: w * 0.055,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,                 
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+- pubspec.yaml:
+name: api_login_form
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+  dio: ^5.9.0
+  intl: ^0.20.2
+  url_launcher: ^6.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^5.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/
+    - assets/images/
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/to/resolution-aware-images
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/to/asset-from-package
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/to/font-from-package
+- https://dummyjson.com/auth/me (URL để get thông tin chi tiết người dùng), ví dụ dữ liệu:
+{
+    "id": 1,
+    "firstName": "Emily",
+    "lastName": "Johnson",
+    "maidenName": "Smith",
+    "age": 29,
+    "gender": "female",
+    "email": "emily.johnson@x.dummyjson.com",
+    "phone": "+81 965-431-3024",
+    "username": "emilys",
+    "password": "emilyspass",
+    "birthDate": "1996-5-30",
+    "image": "https://dummyjson.com/icon/emilys/128",
+    "bloodGroup": "O-",
+    "height": 193.24,
+    "weight": 63.16,
+    "eyeColor": "Green",
+    "hair": {
+        "color": "Brown",
+        "type": "Curly"
+    },
+    "ip": "42.48.100.32",
+    "address": {
+        "address": "626 Main Street",
+        "city": "Phoenix",
+        "state": "Mississippi",
+        "stateCode": "MS",
+        "postalCode": "29112",
+        "coordinates": {
+            "lat": -77.16213,
+            "lng": -92.084824
+        },
+        "country": "United States"
+    },
+    "macAddress": "47:fa:41:18:ec:eb",
+    "university": "University of Wisconsin--Madison",
+    "bank": {
+        "cardExpire": "05/28",
+        "cardNumber": "3693233511855044",
+        "cardType": "Diners Club International",
+        "currency": "GBP",
+        "iban": "GB74MH2UZLR9TRPHYNU8F8"
+    },
+    "company": {
+        "department": "Engineering",
+        "name": "Dooley, Kozey and Cronin",
+        "title": "Sales Manager",
+        "address": {
+            "address": "263 Tenth Street",
+            "city": "San Francisco",
+            "state": "Wisconsin",
+            "stateCode": "WI",
+            "postalCode": "37657",
+            "coordinates": {
+                "lat": 71.814525,
+                "lng": -161.150263
+            },
+            "country": "United States"
+        }
+    },
+    "ein": "977-175",
+    "ssn": "900-590-289",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36",
+    "crypto": {
+        "coin": "Bitcoin",
+        "wallet": "0xb9fc2fe63b2a6c003f1c324c3bfa53259162181a",
+        "network": "Ethereum (ERC20)"
+    },
+    "role": "admin"
+}
+- url post (Khi nhập thông tin đăng nhập thành công) https://dummyjson.com/auth/login:
+{
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJlbWlseXMiLCJlbWFpbCI6ImVtaWx5LmpvaG5zb25AeC5kdW1teWpzb24uY29tIiwiZmlyc3ROYW1lIjoiRW1pbHkiLCJsYXN0TmFtZSI6IkpvaG5zb24iLCJnZW5kZXIiOiJmZW1hbGUiLCJpbWFnZSI6Imh0dHBzOi8vZHVtbXlqc29uLmNvbS9pY29uL2VtaWx5cy8xMjgiLCJpYXQiOjE3NjUzMzAyMTUsImV4cCI6MTc2NTMzMjAxNX0.zR6HVBK2YhJFog0oIrwY5ciTWGidsgNl2ZoX8c-iyJo",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJlbWlseXMiLCJlbWFpbCI6ImVtaWx5LmpvaG5zb25AeC5kdW1teWpzb24uY29tIiwiZmlyc3ROYW1lIjoiRW1pbHkiLCJsYXN0TmFtZSI6IkpvaG5zb24iLCJnZW5kZXIiOiJmZW1hbGUiLCJpbWFnZSI6Imh0dHBzOi8vZHVtbXlqc29uLmNvbS9pY29uL2VtaWx5cy8xMjgiLCJpYXQiOjE3NjUzMzAyMTUsImV4cCI6MTc2NzkyMjIxNX0._dFLZ_PHsmfu24b5RGS3avGR-_TUg7A6DeIP0NtVVtw",
+    "id": 1,
+    "username": "emilys",
+    "email": "emily.johnson@x.dummyjson.com",
+    "firstName": "Emily",
+    "lastName": "Johnson",
+    "gender": "female",
+    "image": "https://dummyjson.com/icon/emilys/128"
+}
+- VD nhập trên URL post trên PostMan:
+{
+    "username": "emilys",
+    "password": "emilyspass",
+    "expiresInMins": 30
+}
+- VD URL get, Headers trên PostMan:
+Authorization	Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJlbWlseXMiLCJlbWFpbCI6ImVtaWx5LmpvaG5zb25AeC5kdW1teWpzb24uY29tIiwiZmlyc3ROYW1lIjoiRW1pbHkiLCJsYXN0TmFtZSI6IkpvaG5zb24iLCJnZW5kZXIiOiJmZW1hbGUiLCJpbWFnZSI6Imh0dHBzOi8vZHVtbXlqc29uLmNvbS9pY29uL2VtaWx5cy8xMjgiLCJpYXQiOjE3NjUzMzAyMTUsImV4cCI6MTc2NTMzMjAxNX0.zR6HVBK2YhJFog0oIrwY5ciTWGidsgNl2ZoX8c-iyJo
+----------------
+* Yêu cầu:
+- Hãy sửa lại các file trên và bổ sung các file mới theo yêu cầu tạo trang web sau:
++ Ban đầu khi bật ứng dụng sẽ mở ra trang đăng nhập, Trong trang đăng nhập sẽ có AppBar với tiêu đề là "22T1020362-Đăng nhập", sau đó phần Body sẽ là form đăng nhập với 2 label "Tên đăng nhập" và "Mật khẩu" cùng 2 TextFormField tương ứng, ở dưới cùng là nút Đăng nhập. Lưu ý 2 TextFormField trên sẽ có Controller, bên Tên đăng nhập cần kiểm tra khác rỗng, bên Mật khẩu cần kiểm tra khác rỗng và có ít nhất 6 ký tự (Giống phần kiểm tra trong api_login_form). Xử lý dữ liệu trên URL post ở trên, lấy accessToken, lưu để đăng nhập vào lấy chi tiết người dùng ở URL get, xóa dữ liệu đã nhập trong trang đăng nhập.
++ Khi bấm vào nút Đăng nhập, sẽ hiển thị trang mới là trang Chi tiết người dùng, lấy dữ liệu trên URL get ở trên. Hiển thị tất cả dữ liệu cho đẹp. Ở dưới cùng là nút Đăng xuất, khi bấm vào sẽ xóa accessToken và quay lại trang Đăng nhập.

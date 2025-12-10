@@ -1,0 +1,21 @@
+* https://dummyjson.com/auth/login
+Khi send trên link trên, lấy accessToken và refreshToken
+- accessToken: Key để truy cập dữ liệu
+- refreshToken: Key để tải lại dữ liệu
+
+"accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJlbWlseXMiLCJlbWFpbCI6ImVtaWx5LmpvaG5zb25AeC5kdW1teWpzb24uY29tIiwiZmlyc3ROYW1lIjoiRW1pbHkiLCJsYXN0TmFtZSI6IkpvaG5zb24iLCJnZW5kZXIiOiJmZW1hbGUiLCJpbWFnZSI6Imh0dHBzOi8vZHVtbXlqc29uLmNvbS9pY29uL2VtaWx5cy8xMjgiLCJpYXQiOjE3NjUzMzAyMTUsImV4cCI6MTc2NTMzMjAxNX0.zR6HVBK2YhJFog0oIrwY5ciTWGidsgNl2ZoX8c-iyJo",
+"refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJlbWlseXMiLCJlbWFpbCI6ImVtaWx5LmpvaG5zb25AeC5kdW1teWpzb24uY29tIiwiZmlyc3ROYW1lIjoiRW1pbHkiLCJsYXN0TmFtZSI6IkpvaG5zb24iLCJnZW5kZXIiOiJmZW1hbGUiLCJpbWFnZSI6Imh0dHBzOi8vZHVtbXlqc29uLmNvbS9pY29uL2VtaWx5cy8xMjgiLCJpYXQiOjE3NjUzMzAyMTUsImV4cCI6MTc2NzkyMjIxNX0._dFLZ_PHsmfu24b5RGS3avGR-_TUg7A6DeIP0NtVVtw",
+
+
+*https://dummyjson.com/auth/me
+- get để lấy dữ liệu người dùng hiện tại
+- Yêu cầu chìa khóa trong Header: Bearer (JWT) + {accessToken}.
+- Trong Header: thêm Authorization: Bearer {accessToken}
+- Trả về mã 200 thành công và dữ liệu
+
+-- Bài kiểm tra:
+- Đầu tiên tạo trang Menu gồm Drawner ở bên trái (Thanh menu trái).
+- Ở Drawner có bài 1, bài 2, bài 3, bài 4, ...
+- Khi bấm vào bài 1, bài 2, bài 3 --> Sẽ hiển thị các bài đã làm tương ứng.
+- Sau đó gửi code toàn bộ dự án lên github, show github.
+- Show code từng bài và code github.
