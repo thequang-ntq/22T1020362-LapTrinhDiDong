@@ -47,7 +47,7 @@ class ProjectDrawer extends StatelessWidget {
                 children: [
                   ClipOval(
                     child: Image.asset(
-                      "../../assets/images/avatar.jpg",
+                      "assets/images/avatar.jpg",
                       width: w * 0.15,
                       height: w * 0.15,
                       fit: BoxFit.cover,

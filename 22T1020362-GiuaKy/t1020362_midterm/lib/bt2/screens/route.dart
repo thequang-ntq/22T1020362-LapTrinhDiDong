@@ -50,7 +50,7 @@ class _MyRouteState extends State<MyRoute> {
                 );
               },
               child: Image(
-                image: AssetImage('../../../assets/images/bt2/img.jpg'),
+                image: AssetImage('assets/images/bt2/img.jpg'),
               ),
             ),
             Padding(

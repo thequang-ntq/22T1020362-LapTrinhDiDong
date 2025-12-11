@@ -11,51 +11,51 @@ class MyPlaces extends StatefulWidget {
 class _MyPlacesState extends State<MyPlaces> {
   List<Map<String, String>> lst = [
     {
-      "url": "./../../../assets/images/bt4/place1.jpg",
+      "url": "assets/images/bt4/place1.jpg",
       "detail": "Địa điểm 1",
     },
     {
-      "url": "./../../../assets/images/bt4/place2.jpg",
+      "url": "assets/images/bt4/place2.jpg",
       "detail": "Địa điểm 2",
     },
     {
-      "url": "./../../../assets/images/bt4/place3.jpg",
+      "url": "assets/images/bt4/place3.jpg",
       "detail": "Địa điểm 3",
     },
     {
-      "url": "./../../../assets/images/bt4/place4.jpg",
+      "url": "assets/images/bt4/place4.jpg",
       "detail": "Địa điểm 4",
     },
         {
-      "url": "./../../../assets/images/bt4/place1.jpg",
+      "url": "assets/images/bt4/place1.jpg",
       "detail": "Địa điểm 1",
     },
     {
-      "url": "./../../../assets/images/bt4/place2.jpg",
+      "url": "assets/images/bt4/place2.jpg",
       "detail": "Địa điểm 2",
     },
     {
-      "url": "./../../../assets/images/bt4/place3.jpg",
+      "url": "assets/images/bt4/place3.jpg",
       "detail": "Địa điểm 3",
     },
     {
-      "url": "./../../../assets/images/bt4/place4.jpg",
+      "url": "assets/images/bt4/place4.jpg",
       "detail": "Địa điểm 4",
     },
         {
-      "url": "./../../../assets/images/bt4/place1.jpg",
+      "url": "assets/images/bt4/place1.jpg",
       "detail": "Địa điểm 1",
     },
     {
-      "url": "./../../../assets/images/bt4/place2.jpg",
+      "url": "assets/images/bt4/place2.jpg",
       "detail": "Địa điểm 2",
     },
     {
-      "url": "./../../../assets/images/bt4/place3.jpg",
+      "url": "assets/images/bt4/place3.jpg",
       "detail": "Địa điểm 3",
     },
     {
-      "url": "./../../../assets/images/bt4/place4.jpg",
+      "url": "assets/images/bt4/place4.jpg",
       "detail": "Địa điểm 4",
     },
   ];

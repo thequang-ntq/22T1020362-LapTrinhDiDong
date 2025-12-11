@@ -7,7 +7,7 @@ class API {
 
   Future<List<News>> getAllNews() async {
     var dio = Dio();
-    var url = "$baseUrl/everything?q=tesla&from=2025-11-10&sortBy=publishedAt&apiKey=$apiKey";
+    var url = "$baseUrl/everything?q=tesla&from=2025-11-11&sortBy=publishedAt&apiKey=$apiKey";
     
     List<News> ls = [];
     

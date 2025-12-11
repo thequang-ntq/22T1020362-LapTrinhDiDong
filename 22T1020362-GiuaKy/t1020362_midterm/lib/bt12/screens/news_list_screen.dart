@@ -338,7 +338,7 @@ class _NewsListScreenState extends State<NewsListScreen> {
                   // Nếu ảnh bị chặn (CORS) hoặc không tải được → dùng ảnh assets
                   errorBuilder: (context, error, stackTrace) {
                     return Image.asset(
-                      '../../../assets/images/bt12/placeholder.jpg',
+                      'assets/images/bt12/placeholder.jpg',
                       width: double.infinity,
                       height: w * 0.5,
                       fit: BoxFit.cover,

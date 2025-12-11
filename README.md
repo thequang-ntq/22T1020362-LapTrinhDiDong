@@ -63,8 +63,8 @@
 | Ngày                  | Công việc                                                                                          | Ghi chú                |
 | --------------------- | -------------------------------------------------------------------------------------------------- | ---------------------- |
 | 10/09/2025            | Bắt đầu môn học                                                                                    | Tải Flutter, VS Code   |
-| 24/09 - 10/12/2025    | Làm các bài tập mà thầy giao, đẩy lên Gibhub                                                       | MySQL                  |
-| 11-16/12/2025         | Làm code giữa kỳ để trình bày kết quả các bài tập, hoàn thiện README.md                            | CodeIgniter 4, MySQL   |
+| 24/09 - 10/12/2025    | Làm các bài tập mà thầy giao, đẩy lên Gibhub                                                       | Flutter                  |
+| 11-16/12/2025         | Làm code giữa kỳ để trình bày kết quả các bài tập, hoàn thiện README.md                            | Flutter   |
 
 # Dự định tương lai
 - [ ] Cập nhật cấu trúc các dự án con (Bài tập con), làm tối ưu và làm sạch code.

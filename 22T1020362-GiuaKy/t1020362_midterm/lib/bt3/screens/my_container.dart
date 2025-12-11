@@ -18,31 +18,31 @@ class _MyContainerState extends State<MyContainer> {
       'title': 'XML và ứng dụng - Nhóm 1',
       'detail': '2025-2026.1.TIN4583.001',
       'students': '58 học viên',
-      'img': './../../../assets/images/bt3/banner.png',
+      'img': 'assets/images/bt3/banner.png',
     },
     {
       'title': 'Lập trình ứng dụng cho các thiết bị di động - Nhóm 6',
       'detail': '2025-2026.1.TIN4403.006',
       'students': '55 học viên',
-      'img': './../../../assets/images/bt3/banner2.png',
+      'img': 'assets/images/bt3/banner2.png',
     },
     {
       'title': 'Lập trình ứng dụng cho các thiết bị di động - Nhóm 5',
       'detail': '2025-2026.1.TIN4403.005',
       'students': '52 học viên',
-      'img': './../../../assets/images/bt3/banner3.png',
+      'img': 'assets/images/bt3/banner3.png',
     },
     {
       'title': 'Lập trình ứng dụng cho các thiết bị di động - Nhóm 4',
       'detail': '2025-2026.1.TIN4403.004',
       'students': '50 học viên',
-      'img': './../../../assets/images/bt3/banner4.png',
+      'img': 'assets/images/bt3/banner4.png',
     },
     {
       'title': 'Lập trình ứng dụng cho các thiết bị di động - Nhóm 3',
       'detail': '2025-2026.1.TIN4403.003',
       'students': '52 học viên',
-      'img': './../../../assets/images/bt3/banner5.png',
+      'img': 'assets/images/bt3/banner5.png',
     },
   ];
 
@@ -85,7 +85,7 @@ class _MyContainerState extends State<MyContainer> {
               Navigator.pop(context);
             },
             icon: Image(
-              image: AssetImage("./../../../assets/images/bt3/avatar.png"),
+              image: AssetImage("assets/images/bt3/avatar.png"),
               fit: BoxFit.cover,
             ),
           ),

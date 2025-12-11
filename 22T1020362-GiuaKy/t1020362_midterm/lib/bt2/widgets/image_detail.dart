@@ -38,7 +38,7 @@ class ImageDetail extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image(
-              image: AssetImage('../../../assets/images/bt2/img.jpg'),
+              image: AssetImage('assets/images/bt2/img.jpg'),
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(

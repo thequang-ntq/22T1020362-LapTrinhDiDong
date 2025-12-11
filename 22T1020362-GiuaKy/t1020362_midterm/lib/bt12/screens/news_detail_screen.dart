@@ -124,7 +124,7 @@ class NewsDetailScreen extends StatelessWidget {
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Image.asset(
-                      '../../../assets/images/bt12/placeholder.jpg', // ảnh dự phòng
+                      'assets/images/bt12/placeholder.jpg', // ảnh dự phòng
                       fit: BoxFit.cover,
                     );
                   },

@@ -66,7 +66,7 @@ class _PhoneState extends State<Phone> {
                 );
               },
               child: Image(
-                image: AssetImage('../../../assets/images/bt2/img.jpg'),
+                image: AssetImage('assets/images/bt2/img.jpg'),
               ),
             ),
             Padding(

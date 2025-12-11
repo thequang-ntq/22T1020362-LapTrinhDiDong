@@ -66,6 +66,19 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - assets/images/bt1/
+    - assets/images/bt2/
+    - assets/images/bt3/
+    - assets/images/bt4/
+    - assets/images/bt5/
+    - assets/images/bt6/
+    - assets/images/bt7/
+    - assets/images/bt8/
+    - assets/images/bt9/
+    - assets/images/bt10/
+    - assets/images/bt11/
+    - assets/images/bt12/
+    - assets/images/bt13/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
