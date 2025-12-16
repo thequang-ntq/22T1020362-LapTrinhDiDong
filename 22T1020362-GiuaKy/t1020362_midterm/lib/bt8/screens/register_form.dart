@@ -9,14 +9,16 @@ class RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterForm> {
 
-  bool _obscurePassword = false; // Biến để điều khiển ẩn/hiện mật khẩu
-  bool _obscureRePassword = false;
+  bool _obscurePassword = true; // Biến để điều khiển ẩn/hiện mật khẩu
+  bool _obscureRePassword = true;
   
   late TextEditingController _usernameController;
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
   late TextEditingController _rePasswordController;
 
+  final _formKey = GlobalKey<FormState>();
+  
   @override
   void initState() {
     super.initState();
@@ -37,9 +39,6 @@ class _RegisterFormState extends State<RegisterForm> {
 
   @override
   Widget build(BuildContext context) {
-
-    final _formKey = GlobalKey<FormState>();
-
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
 
@@ -206,7 +205,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   // TextFormField Mật khẩu với nền trắng và nút mắt
                   TextFormField(
                     controller: _passwordController,
-                    obscureText: !_obscurePassword, // Ẩn/hiện mật khẩu
+                    obscureText: _obscurePassword, // Ẩn/hiện mật khẩu
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.lock,
@@ -215,7 +214,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          _obscurePassword ? Icons.visibility : Icons.visibility_off,
                           size: w * 0.05,
                           color: const Color.fromARGB(255, 100, 100, 100),
                         ),
@@ -283,7 +282,7 @@ class _RegisterFormState extends State<RegisterForm> {
                   // TextFormField Nhập lại mật khẩu với nền trắng và nút mắt
                   TextFormField(
                     controller: _rePasswordController,
-                    obscureText: !_obscureRePassword, // Ẩn/hiện nhập lại mật khẩu
+                    obscureText: _obscureRePassword, // Ẩn/hiện nhập lại mật khẩu
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.lock_outline,
@@ -292,7 +291,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureRePassword ? Icons.visibility_off : Icons.visibility,
+                          _obscureRePassword ? Icons.visibility : Icons.visibility_off,
                           size: w * 0.05,
                           color: const Color.fromARGB(255, 100, 100, 100),
                         ),

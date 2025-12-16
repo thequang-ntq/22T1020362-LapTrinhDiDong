@@ -15,6 +15,8 @@ class _BMIFormState extends State<BMIForm> {
   double? bmi;
   String? type;
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -53,9 +55,6 @@ class _BMIFormState extends State<BMIForm> {
 
   @override
   Widget build(BuildContext context) {
-
-    final _formKey = GlobalKey<FormState>();
-
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
 

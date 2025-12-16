@@ -8,10 +8,14 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-
-  bool _obscurePassword = false; // Biến để điều khiển ẩn/hiện mật khẩu
+  // Sửa: Đổi từ false thành true để mặc định ẩn mật khẩu
+  bool _obscurePassword = true;
+  
   late TextEditingController _passwordController;
   late TextEditingController _usernameController;
+  
+  // Sửa: Di chuyển _formKey ra ngoài build method
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -22,16 +26,13 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   void dispose() {
-    super.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    final _formKey = GlobalKey<FormState>();
-
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
 
@@ -39,15 +40,14 @@ class _LoginFormState extends State<LoginForm> {
       backgroundColor: const Color.fromARGB(255, 223, 223, 223),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: 
-          Text(
-            "Form Đăng nhập",
-            style: TextStyle(
-              fontSize: w * 0.05,
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-            ),
+        title: Text(
+          "Form Đăng nhập",
+          style: TextStyle(
+            fontSize: w * 0.05,
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
           ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.arrow_back),
@@ -55,7 +55,7 @@ class _LoginFormState extends State<LoginForm> {
               Navigator.pop(context);
             },
           ),
-        ],  
+        ],
         backgroundColor: const Color.fromARGB(255, 14, 128, 226),
         centerTitle: true,
       ),
@@ -127,7 +127,9 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                     ),
                     validator: (value) {
-                      if(value == null || value.isEmpty) return "Vui lòng nhập tên người dùng";
+                      if (value == null || value.isEmpty) {
+                        return "Vui lòng nhập tên người dùng";
+                      }
                       return null;
                     },
                   ),
@@ -135,7 +137,8 @@ class _LoginFormState extends State<LoginForm> {
                   // TextFormField Mật khẩu với nền trắng và nút mắt
                   TextFormField(
                     controller: _passwordController,
-                    obscureText: !_obscurePassword, // Ẩn/hiện mật khẩu
+                    // Sửa: Bỏ dấu ! để logic đúng
+                    obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.lock,
@@ -144,7 +147,8 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                          // Sửa: Đổi logic icon cho đúng
+                          _obscurePassword ? Icons.visibility : Icons.visibility_off,
                           size: w * 0.05,
                           color: const Color.fromARGB(255, 100, 100, 100),
                         ),
@@ -203,8 +207,12 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                     ),
                     validator: (value) {
-                      if(value == null || value.isEmpty) return "Vui lòng nhập mật khẩu";
-                      if(value.length < 6) return "Mật khẩu phải có ít nhất 6 ký tự";
+                      if (value == null || value.isEmpty) {
+                        return "Vui lòng nhập mật khẩu";
+                      }
+                      if (value.length < 6) {
+                        return "Mật khẩu phải có ít nhất 6 ký tự";
+                      }
                       return null;
                     },
                   ),
@@ -214,7 +222,9 @@ class _LoginFormState extends State<LoginForm> {
                     width: w * 0.5,
                     child: ElevatedButton(
                       style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(const Color.fromARGB(255, 12, 117, 204)),
+                        backgroundColor: WidgetStateProperty.all(
+                          const Color.fromARGB(255, 12, 117, 204),
+                        ),
                         shape: WidgetStateProperty.all(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -222,7 +232,7 @@ class _LoginFormState extends State<LoginForm> {
                         ),
                       ),
                       onPressed: () {
-                        if(_formKey.currentState!.validate()) {
+                        if (_formKey.currentState!.validate()) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
@@ -232,7 +242,7 @@ class _LoginFormState extends State<LoginForm> {
                                   color: Colors.white,
                                   fontWeight: FontWeight.w500,
                                 ),
-                              ), 
+                              ),
                             ),
                           );
                         }
@@ -254,7 +264,7 @@ class _LoginFormState extends State<LoginForm> {
                               style: TextStyle(
                                 fontSize: w * 0.055,
                                 color: Colors.white,
-                                fontWeight: FontWeight.w600,                 
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ],

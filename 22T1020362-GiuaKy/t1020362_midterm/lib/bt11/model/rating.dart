@@ -10,7 +10,8 @@ class Rating {
   // Factory constructor để parse từ JSON
   factory Rating.fromJson(Map<String, dynamic> json) {
     return Rating(
-      rate: json['rate'] ?? 0,
+      // Sửa: Chuyển đổi int thành double nếu cần
+      rate: (json['rate'] ?? 0).toDouble(),
       count: json['count'] ?? 0,
     );
   }

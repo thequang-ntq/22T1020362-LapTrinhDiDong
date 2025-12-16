@@ -13,6 +13,7 @@ class _MyProductState extends State<MyProduct> {
   List<Product> allProducts = [];
   List<Product> filteredProducts = [];
   TextEditingController searchController = TextEditingController();
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -28,10 +29,16 @@ class _MyProductState extends State<MyProduct> {
 
   //Tải tất cả dữ liệu sản phẩm
   Future<void> loadProducts() async {
+    setState(() {
+      isLoading = true; // Bắt đầu loading
+    });
+    
     final products = await testAPI.getAllProduct();
+    
     setState(() {
       allProducts = products;
       filteredProducts = products;
+      isLoading = false; // Kết thúc loading
     });
   }
 
@@ -87,33 +94,59 @@ class _MyProductState extends State<MyProduct> {
     return Scaffold(
       backgroundColor: Color(0xFFF5F5F5),
       appBar: _buildAppBar(w),
+      // Thay thế toàn bộ phần body từ dòng 95-118:
       body: Column(
         children: [
           _buildSearchBar(w),
           Expanded(
-            child: filteredProducts.isEmpty
-              ? 
+            child: isLoading // Kiểm tra trạng thái loading
+              ?
+              // Màn hình loading
               Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.search_off, size: w * 0.16, 
-                      color: Colors.grey,
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFF6600)),
+                      strokeWidth: 3,
                     ),
                     SizedBox(height: h * 0.02),
                     Text(
-                      'Không tìm thấy sản phẩm',
+                      'Đang tải sản phẩm...',
                       style: TextStyle(
                         fontSize: w * 0.04,
                         color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
               )
-              : 
-              myGridView(filteredProducts, w, h),
+              :
+              // Nội dung khi đã load xong
+              filteredProducts.isEmpty
+                ? 
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.search_off, size: w * 0.16, 
+                        color: Colors.grey,
+                      ),
+                      SizedBox(height: h * 0.02),
+                      Text(
+                        'Không tìm thấy sản phẩm',
+                        style: TextStyle(
+                          fontSize: w * 0.04,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+                : 
+                myGridView(filteredProducts, w, h),
           ),
         ],
       ),

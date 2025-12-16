@@ -6,6 +6,7 @@ class API {
   final Dio dio = Dio();
 
   // Đăng nhập và lấy accessToken
+  // emilys, emilyspass
   Future<Map<String, dynamic>?> login(String username, String password) async {
     var loginUrl = "https://dummyjson.com/auth/login";
 
